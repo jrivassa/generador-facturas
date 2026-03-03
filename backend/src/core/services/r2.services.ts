@@ -1,8 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import crypto from "crypto";
-
-
-
+import moment from 'moment';
 export class R2Service {
     private client: S3Client;
     private bucket: string;
@@ -21,7 +19,9 @@ export class R2Service {
         });
     }
     async uploadPdf(buffer: Buffer): Promise<string> {
-        const hash = crypto.createHash('md5')
+        const hash = crypto.createHash('md5');
+        const date = moment().format('YYYY-MM-DD');
+        hash.update(date);
         const key = `${hash.digest('hex')}.pdf`;
         await this.client.send(new PutObjectCommand({
           Bucket: this.bucket,

@@ -1,14 +1,36 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { CreateInvoiceDto, InvoiceCalculation } from '../data/interfaces';
+const getLocalChromePath = (): string => {
+  switch (process.platform) {
+    case 'win32':
+      return 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+    case 'darwin':
+      return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    default:
+      return '/usr/bin/google-chrome';
+  }
+};
 
 export class PdfService {
 
     async generatePdf(invoice: CreateInvoiceDto, calculation: InvoiceCalculation): Promise<Buffer> {
         const html = this.buildHtml(invoice, calculation);
+        const isProduction = process.env.NODE_ENV === 'production';
 
         const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          args: [
+            ...chromium.args,
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--single-process'
+          ],
+          executablePath: isProduction
+            ? await chromium.executablePath()
+            : getLocalChromePath(),
+          headless: true
         });
 
         try {
