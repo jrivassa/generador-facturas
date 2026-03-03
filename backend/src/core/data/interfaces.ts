@@ -38,3 +38,14 @@ export interface InvoiceItemCalculation {
   discount: number;
   total: number;
 }
+export interface CreateInvoiceDto {
+  fromName: string;
+  items: InvoiceItem[];
+  currency: string;
+}
+
+export interface InvoiceResponse {
+  invoiceNumber: string;
+  calculation: InvoiceCalculation;
+  pdfUrl: string;
+}
