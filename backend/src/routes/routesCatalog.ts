@@ -7,4 +7,4 @@ api.get('/getAllCatalog', CatalogController.getAllCatalog);
 api.get('/getProducts', CatalogController.getProducts);
 api.get('/getServices', CatalogController.getServices);
 
-export { api as routeBackend };
+export { api as routeBackendCatalog };
