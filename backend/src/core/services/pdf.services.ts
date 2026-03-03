@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+import chromium from '@sparticuz/chromium-min';
 import { CreateInvoiceDto, InvoiceCalculation } from '../data/interfaces';
 const getLocalChromePath = (): string => {
   switch (process.platform) {
@@ -11,6 +11,7 @@ const getLocalChromePath = (): string => {
       return '/usr/bin/google-chrome';
   }
 };
+const CHROMIUM_REMOTE_URL = 'https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar';
 
 export class PdfService {
 
@@ -28,7 +29,7 @@ export class PdfService {
             '--single-process'
           ],
           executablePath: isProduction
-            ? await chromium.executablePath()
+            ? await chromium.executablePath(CHROMIUM_REMOTE_URL)
             : getLocalChromePath(),
           headless: true
         });
