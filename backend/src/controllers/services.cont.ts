@@ -29,17 +29,15 @@ class ServicesController {
           const calculation = new CalculationService();
           const calculate = calculation.calculate(invoiceData.items);
           const pdfService = new PdfService();
-          const r2Service = new R2Service();
-
+          const r2Service = new R2Service();          
           try{
             const pdfBuffer =  pdfService.generatePdf(invoiceData as any, calculate);
             pdfBuffer.then((data) => {
                 r2Service.uploadPdf(data).then((url) => {
-                    res.status(200).json({
+                    res.status(200).send([{
                         success: true,
-                        calculation,
-                        pdfUrl: url
-                    });
+                        data:{pdfUrl: url}
+                    }]);
                 });
             });
           }catch(e){
