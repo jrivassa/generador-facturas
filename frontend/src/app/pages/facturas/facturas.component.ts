@@ -96,9 +96,9 @@ export class FacturasComponent implements OnInit {
         const pdfUrl = primerElemento.data.pdfUrl;
         const success = primerElemento.success;
     
-        if (success) {
-          this.pdfUrl.set(pdfUrl);
-        }
+        this.pdfUrl.set(pdfUrl);
+         
+        window.open(pdfUrl, '_blank');
         this.loading.set(false);
       },
       error: (err) => {
