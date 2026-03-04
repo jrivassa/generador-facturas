@@ -4,7 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { InvoiceService } from '../../core/services/invoice.service';
 import { CalculationService } from '../../core/services/calculation.service';
 import {  CatalogItem, InvoiceItem, InvoiceCalculation } from '../../core/interfaces/models';
-
+export interface GenerateResponse {
+  success: boolean;
+  data: {
+    pdfUrl: string;
+  };
+}
 
 @Component({
   selector: 'app-facturas',
@@ -70,5 +75,42 @@ export class FacturasComponent implements OnInit {
     ));
   }
 
- 
+  async generatePdf() {
+    if (this.items().length === 0) return;
+    if (this.fromName().length === 0) {      
+         this.error.set( 'El nopmbre es requerido');
+      return;
+    }
+    this.loading.set(true);
+    this.error.set(null);
+
+    const form = {
+      fromName: this.fromName(),
+      items: this.items(),
+      currency: this.currency()
+    };
+
+    this.api.generateInvoice(form).subscribe({
+      next: (res: any) => {
+        const primerElemento = res[0];
+        const pdfUrl = primerElemento.data.pdfUrl;
+        const success = primerElemento.success;
+    
+        if (success) {
+          this.pdfUrl.set(pdfUrl);
+        }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.errors?.[0]?.message || 'Error generando la factura');
+        this.loading.set(false);
+      }
+    });
+  }
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: this.currency()
+    }).format(amount);
+  }
 }
